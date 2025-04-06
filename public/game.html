@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Brick Breaker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body onload="checkLogin()">
+  <canvas id="myCanvas" width="480" height="320"></canvas>
+
+  <script>
+    function checkLogin() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert("Login required!");
+        window.location.href = "index.html";
+      }
+    }
+  </script>
+
+  <script src="game.js"></script>
+</body>
+</html>
