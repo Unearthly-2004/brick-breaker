@@ -172,4 +172,22 @@ window.onload = function () {
   
     draw();
   };
+
+  async function submitScore(score) {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    
+    try {
+      await fetch('/submit-score', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ score })
+      });
+    } catch (err) {
+      console.error('Score submission failed:', err);
+    }
+  }
   

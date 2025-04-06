@@ -43,4 +43,39 @@ app.post('/login', async (req, res) => {
   res.json({ token });
 });
 
+// Score endpoints
+app.post('/submit-score', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { score } = req.body;
+    
+    const user = await User.findById(decoded.userId);
+    if (score > user.highScore) {
+      user.highScore = score;
+      user.lastPlayed = Date.now();
+      await user.save();
+    }
+    
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Score submission failed' });
+  }
+});
+
+app.get('/leaderboard', async (req, res) => {
+  try {
+    const topPlayers = await User.find()
+      .sort({ highScore: -1 })
+      .limit(10)
+      .select('email highScore lastPlayed');
+    
+    res.json(topPlayers);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to get leaderboard' });
+  }
+});
+
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
